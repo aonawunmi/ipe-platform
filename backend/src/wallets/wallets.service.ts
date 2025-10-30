@@ -223,6 +223,7 @@ export class WalletsService {
 
       const lockAmount = BigInt(amount);
       const balanceAvailable = BigInt(wallet.balanceAvailable);
+      const balanceBefore = balanceAvailable;
 
       if (balanceAvailable < lockAmount) {
         throw new BadRequestException('Insufficient available balance');
@@ -234,6 +235,22 @@ export class WalletsService {
       ).toString();
 
       await manager.save(wallet);
+
+      // Create ledger entry for order placement
+      const ledgerEntry = manager.create(LedgerEntry, {
+        walletId: wallet.id,
+        userId,
+        transactionType: TransactionType.TRADE_BUY, // Using TRADE_BUY for order placement
+        amount: amount,
+        balanceBefore: balanceBefore.toString(),
+        balanceAfter: wallet.balanceAvailable,
+        description: `Order placed - funds locked`,
+        referenceType: 'order',
+        referenceId: orderId,
+        metadata: { action: 'lock_funds', orderId },
+      });
+
+      await manager.save(ledgerEntry);
 
       return wallet;
     });
@@ -259,6 +276,7 @@ export class WalletsService {
       }
 
       const unlockAmount = BigInt(amount);
+      const balanceBefore = BigInt(wallet.balanceAvailable);
 
       wallet.balanceLocked = (
         BigInt(wallet.balanceLocked) - unlockAmount
@@ -268,6 +286,22 @@ export class WalletsService {
       ).toString();
 
       await manager.save(wallet);
+
+      // Create ledger entry for order cancellation
+      const ledgerEntry = manager.create(LedgerEntry, {
+        walletId: wallet.id,
+        userId,
+        transactionType: TransactionType.REFUND,
+        amount: amount,
+        balanceBefore: balanceBefore.toString(),
+        balanceAfter: wallet.balanceAvailable,
+        description: `Order cancelled - funds unlocked`,
+        referenceType: 'order',
+        referenceId: orderId,
+        metadata: { action: 'unlock_funds', orderId },
+      });
+
+      await manager.save(ledgerEntry);
 
       return wallet;
     });
