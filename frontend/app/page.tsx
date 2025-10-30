@@ -34,7 +34,7 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Nigeria's First Regulated
+            Nigeria&apos;s First Regulated
             <br />
             <span className="text-blue-600">Prediction Market</span>
           </h1>
@@ -98,7 +98,7 @@ export default function HomePage() {
           Ready to Start Trading?
         </h2>
         <p className="text-xl text-gray-600 mb-8">
-          Join Nigeria's prediction market revolution today
+          Join Nigeria&apos;s prediction market revolution today
         </p>
         <Link
           href="/register"
