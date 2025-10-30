@@ -84,7 +84,7 @@ export default function PortfolioPage() {
         setCompletedOrders(completed);
 
         // Fetch market details for all unique market IDs
-        const marketIds = [...new Set(ordersData.map((o: Order) => o.marketId))];
+        const marketIds = Array.from(new Set(ordersData.map((o: Order) => o.marketId)));
         const marketsMap = new Map<string, Market>();
 
         await Promise.all(
