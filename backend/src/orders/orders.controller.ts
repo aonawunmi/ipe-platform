@@ -26,9 +26,9 @@ import { Public } from '../auth/decorators/public.decorator';
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}
 
-  @Public() // TEMPORARY: For debugging - bypass authentication
-  @UseGuards(JwtAuthGuard) // Still need guard for @Public() to work
+  @UseGuards(JwtAuthGuard)
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Place a new order' })
   @ApiResponse({
     status: 201,
@@ -38,6 +38,10 @@ export class OrdersController {
     status: 400,
     description: 'Invalid order parameters',
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - authentication required',
+  })
   async placeOrder(
     @Body()
     placeOrderDto: {
@@ -45,25 +49,17 @@ export class OrdersController {
       side: OrderSide;
       price: number;
       quantity: number;
-      userId: string; // Required when using @Public()
     },
     @CurrentUser() user: User,
   ): Promise<Order> {
     console.log('Place order request:', { user: user?.id, body: placeOrderDto });
-
-    // Use userId from body if user is not available (for testing)
-    const userId = user?.id || placeOrderDto.userId;
-
-    if (!userId) {
-      throw new Error('User not authenticated and no userId provided');
-    }
 
     return this.ordersService.placeOrder({
       marketId: placeOrderDto.marketId,
       side: placeOrderDto.side,
       price: placeOrderDto.price,
       quantity: placeOrderDto.quantity,
-      userId: userId,
+      userId: user.id,
     });
   }
 
