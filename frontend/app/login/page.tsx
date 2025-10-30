@@ -40,7 +40,16 @@ export default function LoginPage() {
       setError("");
 
       const response = await authApi.login(data);
-      setAuth(response.user, response.accessToken, response.refreshToken);
+
+      // Add missing fields to user object
+      const completeUser = {
+        ...response.user,
+        isEmailVerified: true, // Users who can login must have verified email
+        isActive: true, // Users who can login must be active
+        createdAt: new Date().toISOString(), // Use current time as fallback
+      };
+
+      setAuth(completeUser, response.accessToken, response.refreshToken);
 
       router.push("/dashboard");
     } catch (err: any) {
