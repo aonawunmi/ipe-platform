@@ -88,7 +88,7 @@ export default function PortfolioPage() {
         const marketsMap = new Map<string, Market>();
 
         await Promise.all(
-          marketIds.map(async (marketId) => {
+          marketIds.map(async (marketId: string) => {
             try {
               const marketResponse = await fetch(
                 `http://localhost:3000/markets/${marketId}`
