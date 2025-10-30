@@ -34,6 +34,8 @@ export default function MarketsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
   useEffect(() => {
     fetchMarkets();
   }, [selectedCategory]);
@@ -47,7 +49,7 @@ export default function MarketsPage() {
       }
 
       const response = await fetch(
-        `http://localhost:3000/markets?${params.toString()}`
+        `${API_URL}/markets?${params.toString()}`
       );
       const data = await response.json();
       setMarkets(data);

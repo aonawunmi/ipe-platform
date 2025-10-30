@@ -37,6 +37,7 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>("all");
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   useEffect(() => {
     fetchWalletData();
@@ -53,7 +54,7 @@ export default function WalletPage() {
       setLoading(true);
 
       // Fetch balance
-      const balanceResponse = await fetch("http://localhost:3000/wallets/balance", {
+      const balanceResponse = await fetch(`${API_URL}/wallets/balance`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -64,7 +65,7 @@ export default function WalletPage() {
 
       // Fetch transaction history
       const txResponse = await fetch(
-        `http://localhost:3000/wallets/transactions?limit=50`,
+        `${API_URL}/wallets/transactions?limit=50`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

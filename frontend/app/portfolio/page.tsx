@@ -43,6 +43,7 @@ export default function PortfolioPage() {
   const [markets, setMarkets] = useState<Map<string, Market>>(new Map());
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"open" | "completed">("open");
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   useEffect(() => {
     fetchPortfolioData();
@@ -59,7 +60,7 @@ export default function PortfolioPage() {
       setLoading(true);
 
       // Fetch user's orders
-      const ordersResponse = await fetch("http://localhost:3000/orders/my-orders", {
+      const ordersResponse = await fetch(`${API_URL}/orders/my-orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -91,7 +92,7 @@ export default function PortfolioPage() {
           marketIds.map(async (marketId) => {
             try {
               const marketResponse = await fetch(
-                `http://localhost:3000/markets/${marketId}`
+                `${API_URL}/markets/${marketId}`
               );
               if (marketResponse.ok) {
                 const marketData = await marketResponse.json();
@@ -119,7 +120,7 @@ export default function PortfolioPage() {
     if (!confirm("Are you sure you want to cancel this order?")) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/orders/${orderId}`, {
+      const response = await fetch(`${API_URL}/orders/${orderId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -54,6 +54,7 @@ export default function MarketDetailPage() {
   const [orderPrice, setOrderPrice] = useState("");
   const [orderQuantity, setOrderQuantity] = useState("");
   const [placing, setPlacing] = useState(false);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   useEffect(() => {
     fetchMarketData();
@@ -66,7 +67,7 @@ export default function MarketDetailPage() {
   async function fetchMarketData() {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3000/markets/${marketId}`);
+      const response = await fetch(`${API_URL}/markets/${marketId}`);
       if (response.ok) {
         const data = await response.json();
         setMarket(data);
@@ -83,7 +84,7 @@ export default function MarketDetailPage() {
   async function fetchOrderBook() {
     try {
       const response = await fetch(
-        `http://localhost:3000/orders/orderbook/${marketId}`
+        `${API_URL}/orders/orderbook/${marketId}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -106,7 +107,7 @@ export default function MarketDetailPage() {
 
     try {
       setPlacing(true);
-      const response = await fetch("http://localhost:3000/orders", {
+      const response = await fetch(`${API_URL}/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
