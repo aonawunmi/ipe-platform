@@ -65,7 +65,16 @@ export default function RegisterPage() {
 
       const { confirmPassword, ...registerData } = data;
       const response = await authApi.register(registerData as RegisterData);
-      setAuth(response.user, response.accessToken, response.refreshToken);
+
+      // Add missing fields to user object
+      const completeUser = {
+        ...response.user,
+        isEmailVerified: true, // Users who can register must have verified email
+        isActive: true, // New users are active by default
+        createdAt: new Date().toISOString(), // Use current time as fallback
+      };
+
+      setAuth(completeUser, response.accessToken, response.refreshToken);
 
       router.push("/dashboard");
     } catch (err: any) {
