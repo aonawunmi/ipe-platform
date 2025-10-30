@@ -7,8 +7,27 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend
+  const allowedOrigins = [
+    'http://localhost:3001', // Local development
+    'https://ipe-platform-4ag9.vercel.app', // Production
+  ];
+
+  // Allow all Vercel preview deployments
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      // Check if origin matches allowed patterns
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') // Allow all Vercel preview deployments
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 
