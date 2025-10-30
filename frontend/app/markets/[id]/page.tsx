@@ -166,9 +166,23 @@ export default function MarketDetailPage() {
 
   const yesPrice = (market.lastYesPrice / 100).toFixed(1);
   const noPrice = (market.lastNoPrice / 100).toFixed(1);
-  const daysLeft = Math.ceil(
-    (new Date(market.closeAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
+
+  // Calculate days left using current date
+  const now = new Date();
+  const closeDate = new Date(market.closeAt);
+  const diffMs = closeDate.getTime() - now.getTime();
+  const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  // Format the time remaining
+  const getTimeRemaining = () => {
+    if (daysLeft < 0) return "Closed";
+    if (daysLeft === 0) {
+      const hoursLeft = Math.ceil(diffMs / (1000 * 60 * 60));
+      return hoursLeft > 0 ? `${hoursLeft}h` : "Closing soon";
+    }
+    return `${daysLeft}d`;
+  };
+
   const costToWin = selectedSide === "yes"
     ? (parseFloat(orderPrice) * parseInt(orderQuantity || "0")) / 100
     : ((100 - parseFloat(orderPrice || "0")) * parseInt(orderQuantity || "0")) / 100;
@@ -246,8 +260,8 @@ export default function MarketDetailPage() {
             />
             <StatItem
               icon={<Clock className="h-5 w-5" />}
-              label="Days Left"
-              value={`${daysLeft}d`}
+              label="Time Left"
+              value={getTimeRemaining()}
             />
             <StatItem
               icon={<BarChart3 className="h-5 w-5" />}

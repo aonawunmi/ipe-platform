@@ -111,12 +111,36 @@ export default function MarketsPage() {
 
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
-          Explore Markets
-        </h1>
-        <p className="text-lg text-gray-600">
-          Trade on real-world events and earn from your predictions
-        </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              Explore Markets
+            </h1>
+            <p className="text-lg text-gray-600">
+              Trade on real-world events and earn from your predictions
+            </p>
+          </div>
+          <Link
+            href="/create-market"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Create Market
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -180,9 +204,22 @@ export default function MarketsPage() {
 function MarketCard({ market }: { market: Market }) {
   const yesPrice = (market.lastYesPrice / 100).toFixed(1);
   const noPrice = (market.lastNoPrice / 100).toFixed(1);
-  const daysLeft = Math.ceil(
-    (new Date(market.closeAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
+
+  // Calculate days left using current date
+  const now = new Date();
+  const closeDate = new Date(market.closeAt);
+  const diffMs = closeDate.getTime() - now.getTime();
+  const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  // Format the time remaining
+  const getTimeRemaining = () => {
+    if (daysLeft < 0) return "Closed";
+    if (daysLeft === 0) {
+      const hoursLeft = Math.ceil(diffMs / (1000 * 60 * 60));
+      return hoursLeft > 0 ? `${hoursLeft}h left` : "Closing soon";
+    }
+    return `${daysLeft}d left`;
+  };
 
   return (
     <Link href={`/markets/${market.id}`}>
@@ -211,7 +248,7 @@ function MarketCard({ market }: { market: Market }) {
             </div>
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              <span>{daysLeft}d left</span>
+              <span>{getTimeRemaining()}</span>
             </div>
           </div>
 
